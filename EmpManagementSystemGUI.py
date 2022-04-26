@@ -131,32 +131,36 @@ class employe:
         #add the id entry to the ID
         ID = self.id_entry.get()
         
-        #querry to select employee with the exact id
-        sql="SELECT * FROM Employee WHERE id =%s"
-        val=(ID,)
-        mycursor.execute(sql,val)
-        myresult = mycursor.fetchall()
-        
-        # gets the number of rows affected
-        row_count = mycursor.rowcount
-        
-        # check if the id already exists
-        if row_count == 0:
-            tkinter.messagebox.showinfo('Response','This ID it does not exist')
+        # check for alphabet entry for id
+        if ID.isdigit():
+            #querry to select employee with the exact id
+            sql="SELECT * FROM Employee WHERE id =%s"
+            val=(ID,)
+            mycursor.execute(sql,val)
+            myresult = mycursor.fetchall()
+            
+            # gets the number of rows affected
+            row_count = mycursor.rowcount
+            
+            # check if the id already exists
+            if row_count == 0:
+                tkinter.messagebox.showinfo('Response','This ID it does not exist')
+            else:
+                x=[]
+                for x in myresult:
+                    continue
+                result='Name:',x[1],'\nID Number :',x[0],'\nDepartment :',x[2],'\nTitle :',x[3]
+                
+                #print messagebox message.
+                tkinter.messagebox.showinfo('Response',' '.join(map(str, result)))
+                
+                #Clear the entry
+                self.name_entry.delete(0,'end')
+                self.id_entry.delete(0,'end')
+                self.dept_entry.delete(0,'end')
+                self.title_entry.delete(0,'end')
         else:
-            x=[]
-            for x in myresult:
-                continue
-            result='Name:',x[1],'\nID Number :',x[0],'\nDepartment :',x[2],'\nTitle :',x[3]
-            
-            #print messagebox message.
-            tkinter.messagebox.showinfo('Response',' '.join(map(str, result)))
-            
-            #Clear the entry
-            self.name_entry.delete(0,'end')
-            self.id_entry.delete(0,'end')
-            self.dept_entry.delete(0,'end')
-            self.title_entry.delete(0,'end')
+            tkinter.messagebox.showinfo('Response','Id take only numbers')
         
     def add_emp(self):
         # Get employee information.
@@ -164,122 +168,150 @@ class employe:
         ID = self.id_entry.get()
         department = self.dept_entry.get()
         title = self.title_entry.get()
-        
-        #querry to select employee with the exact id
-        sql="SELECT * FROM Employee WHERE id =%s"
-        val=(ID,)
-        mycursor.execute(sql,val)
-        myresult = mycursor.fetchall()
-        
-        # gets the number of rows affected by the command executed
-        row_count = mycursor.rowcount
-        
-        # check if the id already exists
-        if row_count != 0:
-            tkinter.messagebox.showinfo('Response','This ID already exist')
-        else:#check for missing info
-            if name=='':# missing name
-                tkinter.messagebox.showinfo('Response',"please enter your name : ")
-            elif ID =='':#missing Id
-                tkinter.messagebox.showinfo('Response',"please enter your ID : ")
-            elif department== '':# missing department
-                tkinter.messagebox.showinfo('Response',"please enter your department : ")
-            elif title == '':# missing title
-                tkinter.messagebox.showinfo('Response',"please enter your title : ")
-            else:
-                #querry to update employee
-                sql="INSERT INTO Employee (ID,Name,Department,Title) VALUES (%s,%s,%s,%s)"
-                val=(ID,name,department,title)
-                mycursor.execute(sql,val)
-                mydb.commit()
-                
-                #print the result
-                tkinter.messagebox.showinfo('Response',"The new employee has been added. ")
-                
-                #Clear the entry
-                self.name_entry.delete(0,'end')
-                self.id_entry.delete(0,'end')
-                self.dept_entry.delete(0,'end')
-                self.title_entry.delete(0,'end')
-        
+        #check for the wrong entry
+        if (ID.isdigit() or name.isalpha() or department.isalpha()
+            or title.isalpha()):
+            #querry to select employee with the exact id
+            sql="SELECT * FROM Employee WHERE id =%s"
+            val=(ID,)
+            mycursor.execute(sql,val)
+            myresult = mycursor.fetchall()
+            
+            # gets the number of rows affected by the command executed
+            row_count = mycursor.rowcount
+            
+            # check if the id already exists
+            if row_count != 0:
+                tkinter.messagebox.showinfo('Response','This ID already exist')
+            else:#check for missing info
+                if name=='':# missing name
+                    tkinter.messagebox.showinfo('Response',"please enter your name : ")
+                elif ID =='':#missing Id
+                    tkinter.messagebox.showinfo('Response',"please enter your ID : ")
+                elif department== '':# missing department
+                    tkinter.messagebox.showinfo('Response',"please enter your department : ")
+                elif title == '':# missing title
+                    tkinter.messagebox.showinfo('Response',"please enter your title : ")
+                else:
+                    #querry to update employee
+                    sql="INSERT INTO Employee (ID,Name,Department,Title) VALUES (%s,%s,%s,%s)"
+                    val=(ID,name,department,title)
+                    mycursor.execute(sql,val)
+                    mydb.commit()
+                    
+                    #print the result
+                    tkinter.messagebox.showinfo('Response',"The new employee has been added. ")
+                    
+                    #Clear the entry
+                    self.name_entry.delete(0,'end')
+                    self.id_entry.delete(0,'end')
+                    self.dept_entry.delete(0,'end')
+                    self.title_entry.delete(0,'end')
+                    
+        elif ID.isalpha():         # check for alphabet entry for id
+            tkinter.messagebox.showinfo('Response','Id take only numbers')
+        elif name.isdigit():        # check for number entry for name
+            tkinter.messagebox.showinfo('Response','Name take only alphabet letters')
+        elif department.isdigit():  # check for number entry for department
+            tkinter.messagebox.showinfo('Response','Department take only alphabet letters')
+        elif title.isdigit():        # check for number entry for title
+            tkinter.messagebox.showinfo('Response','title take only alphabet letters')
+
     def upd_emp(self):
         name = self.name_entry.get()
         ID = self.id_entry.get()
         department = self.dept_entry.get()
         title = self.title_entry.get()
         
-        #querry to select from id for the specefic id
-        sql="SELECT * FROM Employee WHERE id =%s"
-        val=(ID,)
-        mycursor.execute(sql,val)
-        myresult = mycursor.fetchall()
-        
-        # gets the number of rows affected by the command executed
-        row_count = mycursor.rowcount
-        
-        # check if the id already exists
-        if row_count == 0:
-            tkinter.messagebox.showinfo('Response','This ID does not exist you need to add a new employe first')
-        else:
-            if name=='':# missing name
-                tkinter.messagebox.showinfo('Response',"please enter your name : ")
-            elif ID =='':#missing Id
-                tkinter.messagebox.showinfo('Response',"please enter your ID : ")
-            elif department== '':# missing department
-                tkinter.messagebox.showinfo('Response',"please enter your department : ")
-            elif title == '':# missing title
-                tkinter.messagebox.showinfo('Response',"please enter your title : ")
+        #check for the wrong entry
+        if (ID.isdigit() or name.isalpha() or department.isalpha()
+            or title.isalpha()):
+            #querry to select from id for the specefic id
+            sql="SELECT * FROM Employee WHERE id =%s"
+            val=(ID,)
+            mycursor.execute(sql,val)
+            myresult = mycursor.fetchall()
+            
+            # gets the number of rows affected by the command executed
+            row_count = mycursor.rowcount
+            
+            # check if the id already exists
+            if row_count == 0:
+                tkinter.messagebox.showinfo('Response','This ID does not exist you need to add a new employe first')
             else:
+                if name=='':# missing name
+                    tkinter.messagebox.showinfo('Response',"please enter your name : ")
+                elif ID =='':#missing Id
+                    tkinter.messagebox.showinfo('Response',"please enter your ID : ")
+                elif department== '':# missing department
+                    tkinter.messagebox.showinfo('Response',"please enter your department : ")
+                elif title == '':# missing title
+                    tkinter.messagebox.showinfo('Response',"please enter your title : ")
+                else:
+                    
+                    #querry to update name with specefic id
+                    sql= "UPDATE Employee SET name = %s WHERE id = %s"
+                    val=(name,ID)
+                    mycursor.execute(sql,val)
+
+                    #querry to update department with specefic id
+                    sql= "UPDATE Employee SET Department = %s WHERE id = %s"
+                    val=(department,ID)
+                    mycursor.execute(sql,val)
+
+                    #querry to update title with specefic id
+                    sql= "UPDATE Employee SET Title = %s WHERE id = %s"
+                    val=(title,ID)
+                    mycursor.execute(sql,val)
+                    mydb.commit()
+                    tkinter.messagebox.showinfo('Info',"Employee information updated ")
+
+                    #clear the entry
+                    self.name_entry.delete(0,'end')
+                    self.id_entry.delete(0,'end')
+                    self.dept_entry.delete(0,'end')
+                    self.title_entry.delete(0,'end')
+                    
+        elif ID.isalpha():         # check for alphabet entry for id
+            tkinter.messagebox.showinfo('Response','Id take only numbers')
+        elif name.isdigit():        # check for number entry for name
+            tkinter.messagebox.showinfo('Response','Name take only alphabet letters')
+        elif department.isdigit():  # check for number entry for department
+            tkinter.messagebox.showinfo('Response','Department take only alphabet letters')
+        elif title.isdigit():        # check for number entry for title
+            tkinter.messagebox.showinfo('Response','title take only alphabet letters')
+
+    def del_emp(self):
+        ID = self.id_entry.get()
+        
+        # check for alphabet entry for id
+        if ID.isdigit():
+            #querry to select employee with the exact id
+            sql="SELECT * FROM Employee WHERE id =%s"
+            val=(ID,)
+            mycursor.execute(sql,val)
+            myresult = mycursor.fetchall()
+            
+            # gets the number of rows affected by the command executed
+            row_count = mycursor.rowcount
+            # check if the id already exists
+            if row_count == 0:
+                tkinter.messagebox.showinfo('Response','This ID does not exist')
+            else:
+                #delete from employee for the specific id
+                sql="DELETE FROM Employee WHERE id =%s"
+                val=(ID,)
+                mycursor.execute(sql,val)
+                tkinter.messagebox.showinfo('Info',"Employee information deleted. ")
                 
-                #querry to update name with specefic id
-                sql= "UPDATE Employee SET name = %s WHERE id = %s"
-                val=(name,ID)
-                mycursor.execute(sql,val)
-
-                #querry to update department with specefic id
-                sql= "UPDATE Employee SET Department = %s WHERE id = %s"
-                val=(department,ID)
-                mycursor.execute(sql,val)
-
-                #querry to update title with specefic id
-                sql= "UPDATE Employee SET Title = %s WHERE id = %s"
-                val=(title,ID)
-                mycursor.execute(sql,val)
-                mydb.commit()
-                tkinter.messagebox.showinfo('Response',"Employee information updated ")
-
                 #clear the entry
                 self.name_entry.delete(0,'end')
                 self.id_entry.delete(0,'end')
                 self.dept_entry.delete(0,'end')
                 self.title_entry.delete(0,'end')
-
-    def del_emp(self):
-        ID = self.id_entry.get()
-        
-        #querry to select employee with the exact id
-        sql="SELECT * FROM Employee WHERE id =%s"
-        val=(ID,)
-        mycursor.execute(sql,val)
-        myresult = mycursor.fetchall()
-        
-        # gets the number of rows affected by the command executed
-        row_count = mycursor.rowcount
-        # check if the id already exists
-        if row_count == 0:
-            tkinter.messagebox.showinfo('Response','This ID does not exist')
+                
         else:
-            #delete from employee for the specific id
-            sql="DELETE FROM Employee WHERE id =%s"
-            val=(ID,)
-            mycursor.execute(sql,val)
-            tkinter.messagebox.showinfo('Response',"Employee information deleted. ")
-            
-            #clear the entry
-            self.name_entry.delete(0,'end')
-            self.id_entry.delete(0,'end')
-            self.dept_entry.delete(0,'end')
-            self.title_entry.delete(0,'end')
+            tkinter.messagebox.showinfo('Response','Id take only numbers')
 
     def quit(self):
         # Display an info dialog box.
